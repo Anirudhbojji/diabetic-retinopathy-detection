@@ -6,7 +6,7 @@ import tensorflow as tf
 from tensorflow import keras
 
 # Load the pre-trained model
-model = keras.models.load_model('your_model_path.h5')
+model = keras.models.load_model('model.h5')
 
 def classify_image():
     # Check if an image is selected
