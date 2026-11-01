@@ -1,4 +1,10 @@
+# app
 streamlit
 tensorflow
 numpy
 Pillow
+
+# training (train.ipynb)
+opencv-python
+scikit-learn
+matplotlib

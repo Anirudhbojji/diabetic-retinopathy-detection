@@ -25,4 +25,21 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-> **Note:** the trained model weights (`model.h5`) are not included in this repository due to size. Place your trained Keras model at the repo root as `model.h5` before running. The model expects 224×224 RGB input.
+> **Note:** the trained model weights (`model.h5`) are not included in this repository due to size. Train the model yourself (below) or place an existing Keras model at the repo root as `model.h5`. The model expects 224×224 RGB input.
+
+## Training
+
+`train.ipynb` trains the CNN from scratch and saves the weights as `model.h5` (the file `app.py` loads).
+
+It expects the dataset in a `dataset1/` folder at the repo root, with one subfolder per class:
+
+```
+dataset1/
+├── No_DR/
+├── Mild/
+├── Moderate/
+├── Severe/
+└── Proliferate_DR/
+```
+
+Each subfolder contains the retinal images for that class (e.g. from the [APTOS 2019 / Kaggle DR dataset](https://www.kaggle.com/competitions/aptos2019-blindness-detection)). Images are resized to 224×224 and normalized; the notebook also prints a classification report and confusion matrix on a held-out 20% test split.
