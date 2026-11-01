@@ -1,6 +1,5 @@
-import tkinter as tk
-from tkinter import filedialog
-from PIL import Image, ImageTk
+import streamlit as st
+from PIL import Image
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
@@ -8,73 +7,109 @@ from tensorflow import keras
 # Load the pre-trained model
 model = keras.models.load_model('model.h5')
 
-def classify_image():
-    # Check if an image is selected
-    if image_path:
-        # Load and preprocess the image
-        image = Image.open(image_path)
-        image = image.resize((224, 224))  # Resize the image
-        image = np.array(image) / 255.0  # Normalize the image
-        image = np.expand_dims(image, axis=0)  # Add batch dimension
-
-        # Perform classification
-        prediction = model.predict(image)
-        class_index = np.argmax(prediction)
-        class_label = class_names[class_index]
-
-        # Update the result label
-        result_label.config(text=f"Classification Result: {class_label}")
-    else:
-        result_label.config(text="No image selected")
-
-def open_image():
-    global image_path
-    image_path = filedialog.askopenfilename()
-    image = Image.open(image_path)
-    image.thumbnail((300, 300))  # Resize the image to fit in the label
-    photo = ImageTk.PhotoImage(image)
-    image_label.config(image=photo)
-    image_label.image = photo
-
-# Create the main window
-window = tk.Tk()
-window.title("Diabetic Retinopathy Detection")
-
-# Set the background image
-background_image = Image.open("bg1.webp")
-background_photo = ImageTk.PhotoImage(background_image)
-background_label = tk.Label(window, image=background_photo)
-background_label.place(x=0, y=0, relwidth=1, relheight=1)
-
-# Create the heading label
-heading_label = tk.Label(window, text="Diabetic Retinopathy Detection", font=("Helvetica", 27, "bold"))
-heading_label.pack(pady=10)
-
-# Create the image label
-image_label = tk.Label(window)
-image_label.pack(pady=10)
-
-# Create the open button
-open_button = tk.Button(window, text="Open Image", command=open_image)
-open_button.pack(pady=5)
-
-# Create the classify button
-classify_button = tk.Button(window, text="Classify", command=classify_image)
-classify_button.pack(pady=5)
-
-# Create the result label
-result_label = tk.Label(window, text="Classification Result: ")
-result_label.pack(pady=5)
-
 # List of class names for the model output
 class_names = ['No_DR', 'Mild', 'Moderate', 'Severe', 'Proliferate_DR']
 
-# Create the bottom label
-bottom_label = tk.Label(window, text="Done By - Anirudh Bojji & Siddharth Bollu", font=("Helvetica", 16))
-bottom_label.pack(pady=10)
+# Dictionary of precautions for each class
+precautions = {
+    'No_DR': 'No precautions required.',
+    'Mild': 'Visit an eye specialist regularly.',
+    'Moderate': 'Monitor your blood sugar levels. Follow the advice of your doctor.',
+    'Severe': 'Consult an eye specialist immediately. Follow their instructions.',
+    'Proliferate_DR': 'Seek immediate medical attention. Follow the advice of an eye specialist.'
+}
 
-# Initialize the image path
-image_path = None
+def classify_image(image):
+    # Preprocess the image
+    image = image.resize((224, 224))  # Resize the image
+    image = np.array(image) / 255.0  # Normalize the image
+    image = np.expand_dims(image, axis=0)  # Add batch dimension
 
-# Run the main window loop
-window.mainloop()
+    # Perform classification
+    prediction = model.predict(image)
+    class_index = np.argmax(prediction)
+    class_label = class_names[class_index]
+
+    return class_label
+
+# Set Streamlit app title
+st.title("Diabetic Retinopathy Detection")
+
+# Add image below the title
+title_image = Image.open("assets/art.jpeg")
+st.image(title_image, use_column_width=True)
+
+custom_style = """
+<style>
+body {
+    background-image: url("bg1.webp");
+    background-size: cover;
+}
+
+.side-bar {
+    background-color: #f0f0f0;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+}
+</style>
+"""
+st.markdown(custom_style, unsafe_allow_html=True)
+
+# Add GIF in the sidebar
+st.sidebar.image("assets/retina.gif", use_column_width=True)
+
+
+# Display side decorations
+st.sidebar.markdown("INSTRUCTIONS")
+st.sidebar.markdown(
+    '''
+    1. *Upload Image:*
+       - Look for the "Upload an image" section.
+       - Click on the "Browse Files" button.
+       - Choose an image file (JPG, JPEG, or PNG) from your computer.
+
+    2. *View Uploaded Image:*
+       - Once the image is selected, it will be displayed on the page.
+       - Take a moment to review the uploaded image.
+
+    3. *Classify Image:*
+       - Locate the "Classify" button.
+       - Click on the "Classify" button to start the classification process.
+
+    4. *View Classification Result:*
+       - The system will process the uploaded image.
+       - The classification result will be displayed on the page.
+       - Take note of the predicted class label (e.g., "Mild", "Severe", etc.).
+
+    5. *Follow Precautions (if provided):*
+       - If any precautions or recommendations are mentioned based on the classified label, they will be displayed.
+       - Read and follow the mentioned precautions to ensure appropriate care.
+    ''')
+
+# Upload image
+uploaded_image = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
+
+pre_upload_image = Image.open("assets/Sample.jpeg")
+st.image(pre_upload_image, caption="SAMPLE IMAGE", use_column_width=True,width=300)
+
+if uploaded_image is not None:
+    image = Image.open(uploaded_image)
+    if st.button("Preview"):
+        thumbnail_size = (150, 150)
+        image.thumbnail(thumbnail_size)
+        st.image(image, caption="Preview)")
+
+    # Classify when the classify button is clicked
+    if st.button("Classify"):
+        # Perform classification
+        class_label = classify_image(image)
+        st.subheader("Classification Result")
+        st.write("Predicted Class: ", class_label)
+
+        # Display precautions based on the class label
+        if class_label in precautions:
+            st.subheader("Precautions")
+            st.write(precautions[class_label])
+        else:
+            st.write("No precautions available for the classified label.")

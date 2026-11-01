@@ -1,0 +1,13 @@
+# model weights (too large for git)
+*.h5
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# os / editor
+.DS_Store
+.idea/
+.vscode/
