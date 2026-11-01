@@ -1,6 +1,6 @@
 # Diabetic Retinopathy Detection
 
-A deep-learning web app that classifies retinal fundus images by diabetic retinopathy severity. Built as a B.Tech mini project by Anirudh Bojji & Siddharth Bollu.
+A deep-learning web app that classifies retinal fundus images by diabetic retinopathy severity. Built as a B.E mini project by Me & Siddharth Bollu.
 
 Diabetic retinopathy (DR) is a chronic eye disease that affects people with diabetes and is a leading cause of blindness in diabetic patients. Early detection and treatment can prevent severe vision loss — machine learning models can help by classifying retinal images automatically.
 
